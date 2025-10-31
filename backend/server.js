@@ -11,7 +11,7 @@ require('dotenv').config();
 const prisma = new PrismaClient();
 
 // Render stellt den Port als Umgebungsvariable bereit
-const PORT = process.env.PORT || 1000; 
+const PORT = process.env.PORT || 3001; 
 // Add CORS before other middleware
 
 app.use(express.json()); // Für das Parsen von JSON-Anfragen
