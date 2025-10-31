@@ -8,6 +8,9 @@
     "dev": "echo 'Run development server here'",
     "generate": "npx prisma generate"
   },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
   "dependencies": {
     "express": "^4.19.2",
     "prisma": "^5.14.0",
