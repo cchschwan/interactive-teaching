@@ -13,7 +13,7 @@ const prisma = new PrismaClient();
 // Render stellt den Port als Umgebungsvariable bereit
 const PORT = process.env.PORT || 1000; 
 // Add CORS before other middleware
-app.use(cors());
+
 app.use(express.json()); // Für das Parsen von JSON-Anfragen
 
 // Add CORS configuration
