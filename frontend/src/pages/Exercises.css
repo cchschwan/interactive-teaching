@@ -46,11 +46,17 @@
   border-radius: 8px;
 }
 
+.question-section {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
 .question-text {
   font-size: 1.1rem;
   margin-bottom: 1.5rem;
   color: #2c3e50;
-  font-weight: 500;
 }
 
 .options {
@@ -58,11 +64,33 @@
   padding: 0;
 }
 
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
+}
+
 .options li {
   padding: 0.5rem;
   margin: 0.5rem 0;
   background: #f8f9fa;
   border-radius: 4px;
+}
+
+.option-item {
+  display: flex;
+  align-items: center;
+  padding: 0.8rem;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.option-item:hover {
+  background: #e9ecef;
 }
 
 .option-label {
@@ -98,19 +126,29 @@
   font-size: 1rem;
 }
 
+.text-input {
+  width: 100%;
+  padding: 0.8rem;
+  margin-bottom: 1.5rem;
+  border: 2px solid #dee2e6;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
 .check-button {
+  width: 100%;
+  padding: 0.8rem;
   background: #007bff;
   color: white;
   border: none;
-  padding: 0.5rem 1rem;
   border-radius: 4px;
   cursor: pointer;
-  margin-top: 1rem;
-  width: 100%;
+  font-size: 1rem;
+  transition: background-color 0.2s;
 }
 
 .check-button:disabled {
-  background: #ccc;
+  background: #6c757d;
   cursor: not-allowed;
 }
 
