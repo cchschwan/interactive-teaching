@@ -82,6 +82,18 @@
   cursor: pointer;
 }
 
+.option-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.option-text {
+  font-size: 1rem;
+  color: #2c3e50;
+}
+
 .option-item {
   display: flex;
   align-items: center;
@@ -95,6 +107,12 @@
 
 .option-item:hover {
   background: #e9ecef;
+}
+
+.option-item input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
 }
 
 .text-input {
