@@ -18,7 +18,7 @@ function Login() {
     console.log('Using API URL:', apiUrl);
 
     try {
-      const response = await fetch('/api/login', {
+      const response = await fetch(`${apiUrl}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
