@@ -37,10 +37,12 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this';
 
 // Add login endpoint
 app.post('/api/login', async (req, res) => {
-  console.log('Login attempt:', req.body);
+  console.log('Login request received:', req.body); // Debug log
+
   const { qrCodeIdentifier } = req.body;
 
   if (!qrCodeIdentifier) {
+    console.log('Missing qrCodeIdentifier'); // Debug log
     return res.status(400).json({ message: 'QR-Code Identifikator fehlt' });
   }
 
@@ -49,25 +51,26 @@ app.post('/api/login', async (req, res) => {
       where: { qrCodeIdentifier },
     });
 
+    console.log('Found student:', student); // Debug log
+
     if (!student) {
       return res.status(401).json({ message: 'Ungültiger QR-Code' });
     }
 
-    // Generate JWT token
     const token = jwt.sign(
       { studentId: student.id },
-      JWT_SECRET,
+      process.env.JWT_SECRET || 'dev-secret',
       { expiresIn: '8h' }
     );
 
-    res.json({
+    return res.json({
       token,
-      studentId: student.id
+      studentId: student.id,
+      message: 'Login erfolgreich'
     });
-
   } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ message: 'Server-Fehler beim Login' });
+    console.error('Server error:', error); // Debug log
+    return res.status(500).json({ message: 'Server-Fehler beim Login' });
   }
 });
 
