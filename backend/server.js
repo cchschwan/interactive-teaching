@@ -24,7 +24,25 @@ app.use(cors({
 
 // Add request logging middleware
 app.use((req, res, next) => {
+  const start = Date.now();
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  
+  res.on('finish', () => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} ${res.statusCode} ${Date.now() - start}ms`);
+  });
+  
+  next();
+});
+
+// Enhanced logging middleware
+app.use((req, res, next) => {
+  const start = Date.now();
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  
+  res.on('finish', () => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} ${res.statusCode} ${Date.now() - start}ms`);
+  });
+  
   next();
 });
 
