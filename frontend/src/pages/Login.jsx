@@ -1,8 +1,10 @@
 // src/pages/Login.jsx
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
 function Login() {
+  const navigate = useNavigate();
   const [qrCode, setQrCode] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -24,10 +26,9 @@ function Login() {
       const data = await response.json();
 
       if (response.ok) {
-        console.log('Login successful:', data);
         localStorage.setItem('authToken', data.token);
         localStorage.setItem('studentId', data.studentId);
-        // Successful login - no navigation
+        navigate('/exercises'); // Navigate to exercises after successful login
       } else {
         setError(data.message || 'Login fehlgeschlagen');
       }
