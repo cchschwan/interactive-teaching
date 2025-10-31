@@ -15,7 +15,6 @@ function Login() {
     setIsLoading(true);
 
     try {
-      console.log('Attempting login with:', qrCode); // Debug log
       const response = await fetch('/api/login', {
         method: 'POST',
         headers: {
@@ -24,23 +23,20 @@ function Login() {
         body: JSON.stringify({ qrCodeIdentifier: qrCode }),
       });
 
-      console.log('Response status:', response.status); // Debug log
-      
-      // Check if response is empty
+      console.log('Response status:', response.status);
       const text = await response.text();
-      console.log('Raw response:', text); // Debug log
-      
-      let data;
-      try {
-        data = JSON.parse(text);
-      } catch (parseError) {
-        throw new Error(`Invalid JSON response: ${text}`);
+      console.log('Raw response:', text);
+
+      if (!text) {
+        throw new Error('Server sent empty response');
       }
 
-      if (response.ok) {
+      const data = JSON.parse(text);
+
+      if (response.ok && data.token) {
         localStorage.setItem('authToken', data.token);
         localStorage.setItem('studentId', data.studentId);
-        navigate('/exercises'); // Navigate to exercises after successful login
+        window.location.href = '/exercises';
       } else {
         setError(data.message || 'Login fehlgeschlagen');
       }

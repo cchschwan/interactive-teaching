@@ -37,24 +37,30 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this';
 
 // Add login endpoint
 app.post('/api/login', async (req, res) => {
-  console.log('Login request received:', req.body); // Debug log
-
-  const { qrCodeIdentifier } = req.body;
-
-  if (!qrCodeIdentifier) {
-    console.log('Missing qrCodeIdentifier'); // Debug log
-    return res.status(400).json({ message: 'QR-Code Identifikator fehlt' });
-  }
+  console.log('[Login] Request received:', req.body);
 
   try {
+    const { qrCodeIdentifier } = req.body;
+
+    if (!qrCodeIdentifier) {
+      console.log('[Login] Missing qrCodeIdentifier');
+      return res.status(400).json({
+        success: false,
+        message: 'QR-Code Identifikator fehlt'
+      });
+    }
+
     const student = await prisma.student.findUnique({
       where: { qrCodeIdentifier },
     });
 
-    console.log('Found student:', student); // Debug log
+    console.log('[Login] Found student:', student);
 
     if (!student) {
-      return res.status(401).json({ message: 'Ungültiger QR-Code' });
+      return res.status(401).json({
+        success: false,
+        message: 'Ungültiger QR-Code'
+      });
     }
 
     const token = jwt.sign(
@@ -63,15 +69,31 @@ app.post('/api/login', async (req, res) => {
       { expiresIn: '8h' }
     );
 
-    return res.json({
+    console.log('[Login] Generated token for student:', student.id);
+
+    return res.status(200).json({
+      success: true,
       token,
       studentId: student.id,
       message: 'Login erfolgreich'
     });
+
   } catch (error) {
-    console.error('Server error:', error); // Debug log
-    return res.status(500).json({ message: 'Server-Fehler beim Login' });
+    console.error('[Login] Server error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Server-Fehler beim Login',
+      error: error.message
+    });
   }
+});
+
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    env: process.env.NODE_ENV
+  });
 });
 
 app.listen(PORT, () => {
