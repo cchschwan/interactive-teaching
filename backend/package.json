@@ -6,8 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "echo 'Run development server here'",
-    "generate": "npx prisma generate",
-    "postinstall": "npx prisma generate"
+    "generate": "npx prisma generate"
   },
   "dependencies": {
     "express": "^4.19.2",
