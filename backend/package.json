@@ -5,8 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "echo 'Run development server here'",
-    "postinstall": "npx prisma generate"
+    "dev": "echo 'Run development server here'"
   },
   "dependencies": {
     "express": "^4.19.2",
