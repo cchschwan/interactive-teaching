@@ -46,19 +46,51 @@ app.use((req, res, next) => {
   next();
 });
 
+// Middleware to verify JWT token
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ message: 'Authentication required' });
+  }
+
+  try {
+    const user = jwt.verify(token, process.env.JWT_SECRET || 'dev-secret');
+    req.user = user;
+    next();
+  } catch (err) {
+    return res.status(403).json({ message: 'Invalid or expired token' });
+  }
+};
+
 // Einfacher Test-Endpunkt
 app.get('/api/status', (req, res) => {
   res.json({ message: "API is running!", environment: process.env.NODE_ENV });
 });
 
 // Beispiel-Endpunkt: Ruft alle Übungen ab (funktioniert erst nach Prisma Migration!)
-app.get('/api/exercises', async (req, res) => {
+app.get('/api/exercises', authenticateToken, async (req, res) => {
   try {
-    const exercises = await prisma.exercise.findMany();
+    console.log('Fetching exercises for student:', req.user.studentId);
+    
+    const exercises = await prisma.exercise.findMany({
+      select: {
+        id: true,
+        title: true,
+        topic: true,
+        questionJson: true
+      }
+    });
+
+    console.log('Found exercises:', exercises);
     res.json(exercises);
   } catch (error) {
-    console.error('Failed to fetch exercises:', error);
-    res.status(500).json({ error: 'Could not fetch exercises' });
+    console.error('Error fetching exercises:', error);
+    res.status(500).json({ 
+      message: 'Failed to fetch exercises',
+      error: error.message 
+    });
   }
 });
 
