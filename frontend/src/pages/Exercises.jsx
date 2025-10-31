@@ -98,14 +98,16 @@ function Exercises() {
                 <div className="options-list">
                   {exercise.questionJson.options.map((option, index) => (
                     <label key={index} className="option-item">
-                      <input
-                        type="radio"
-                        name={`exercise-${exercise.id}`}
-                        value={option}
-                        checked={answers[exercise.id] === option}
-                        onChange={(e) => handleAnswerChange(exercise.id, e.target.value)}
-                      />
-                      <span>{option}</span>
+                      <div className="option-content">
+                        <input
+                          type="radio"
+                          name={`exercise-${exercise.id}`}
+                          value={option}
+                          checked={answers[exercise.id] === option}
+                          onChange={(e) => handleAnswerChange(exercise.id, e.target.value)}
+                        />
+                        <span className="option-text">{option}</span>
+                      </div>
                     </label>
                   ))}
                 </div>
