@@ -1,51 +1,70 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import './Exercises.css';
 
 function Exercises() {
   const [exercises, setExercises] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
+  const [answers, setAnswers] = useState({});
+  const [feedback, setFeedback] = useState({});
 
   useEffect(() => {
     const fetchExercises = async () => {
       try {
         const token = localStorage.getItem('authToken');
-        if (!token) {
-          navigate('/');
-          return;
-        }
-
-        const baseUrl = import.meta.env.VITE_API_URL || '';
-        const response = await fetch(`${baseUrl}/api/exercises`, {
+        const response = await fetch('/api/exercises', {
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+            'Authorization': `Bearer ${token}`
           }
         });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        
+        if (response.ok) {
+          const data = await response.json();
+          setExercises(data);
+        } else {
+          setError('Fehler beim Laden der Übungen');
         }
-
-        const data = await response.json();
-        console.log('Received exercises:', data);
-        setExercises(data);
       } catch (err) {
-        console.error('Failed to fetch exercises:', err);
-        setError('Fehler beim Laden der Übungen: ' + err.message);
+        setError('Verbindungsfehler');
       } finally {
         setLoading(false);
       }
     };
 
     fetchExercises();
-  }, [navigate]);
+  }, []);
+
+  const handleAnswerChange = (exerciseId, value) => {
+    setAnswers(prev => ({
+      ...prev,
+      [exerciseId]: value
+    }));
+    // Clear feedback when answer changes
+    setFeedback(prev => ({
+      ...prev,
+      [exerciseId]: null
+    }));
+  };
+
+  const checkAnswer = (exercise) => {
+    const userAnswer = answers[exercise.id];
+    const isCorrect = exercise.questionJson.type === 'multiple-choice' 
+      ? userAnswer === exercise.solutionJson.correctAnswer
+      : userAnswer?.toLowerCase() === exercise.solutionJson.correctAnswer.toLowerCase();
+
+    setFeedback(prev => ({
+      ...prev,
+      [exercise.id]: {
+        isCorrect,
+        message: isCorrect 
+          ? 'Richtig! ' + exercise.solutionJson.explanation
+          : 'Leider falsch. Versuche es noch einmal!'
+      }
+    }));
+  };
 
   if (loading) return <div>Lade Übungen...</div>;
   if (error) return <div className="error">{error}</div>;
-  if (!exercises.length) return <div>Keine Übungen verfügbar.</div>;
 
   return (
     <div className="exercises-container">
