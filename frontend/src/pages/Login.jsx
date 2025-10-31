@@ -14,11 +14,11 @@ function Login() {
     setError('');
     setIsLoading(true);
 
-    const apiUrl = import.meta.env.VITE_API_URL || '/api';
-    console.log('Using API URL:', apiUrl);
-
+    const baseUrl = import.meta.env.VITE_API_URL || '';
+    
     try {
-      const response = await fetch(`${apiUrl}/login`, {
+      console.log('Sending request to:', `${baseUrl}/api/login`);
+      const response = await fetch(`${baseUrl}/api/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -53,8 +53,8 @@ function Login() {
         throw new Error(`Ungültige Server-Antwort: ${text}`);
       }
     } catch (err) {
-      console.error('Login Error:', err);
-      setError(`Fehler: ${err.message}`);
+      console.error('Network error:', err);
+      setError(`Verbindungsfehler: ${err.message}`);
     } finally {
       setIsLoading(false);
     }
