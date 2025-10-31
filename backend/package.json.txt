@@ -1,0 +1,17 @@
+{
+  "name": "lernplatform-backend",
+  "version": "1.0.0",
+  "description": "API for interactive learning platform",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "echo 'Run development server here'",
+    "postinstall": "npx prisma generate"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "prisma": "^5.14.0",
+    "@prisma/client": "^5.14.0",
+    "dotenv": "^16.4.5"
+  }
+}

@@ -1,0 +1,64 @@
+// Konfiguriert die Verbindung zur PostgreSQL-Datenbank
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // Nutzt die Variable, die du in Render gesetzt hast
+}
+
+// Definiert den Prisma-Client (wird für Abfragen im Node.js-Code genutzt)
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ----------------------------------------------------
+// 1. Tabelle: Studenten (students)
+// ----------------------------------------------------
+model Student {
+  id                    Int      @id @default(autoincrement()) @map("student_id")
+  qrCodeIdentifier      String   @unique @map("qr_code_identifier") @db.VarChar(50)
+  className             String?  @map("class_name") @db.VarChar(100) // Optionaler Klassenname
+  dateCreated           DateTime @default(now()) @map("date_created") @db.Timestamptz(6)
+  
+  // Beziehung zur Results-Tabelle (ein Student hat viele Ergebnisse)
+  results               Result[]
+
+  @@map("students") // Benennt die Tabelle in der Datenbank "students"
+}
+
+// ----------------------------------------------------
+// 2. Tabelle: Übungen (exercises)
+// ----------------------------------------------------
+model Exercise {
+  id                    Int      @id @default(autoincrement()) @map("exercise_id")
+  title                 String   @db.VarChar(255)
+  questionJson          Json     @map("question_json") // Speichert die flexible Übungsstruktur (JSONB in Postgres)
+  solutionJson          Json     @map("solution_json") // Speichert die Musterlösung
+  topic                 String   @db.VarChar(100)
+  
+  // Beziehung zur Results-Tabelle (eine Übung hat viele Ergebnisse)
+  results               Result[]
+
+  @@map("exercises") // Benennt die Tabelle in der Datenbank "exercises"
+}
+
+// ----------------------------------------------------
+// 3. Tabelle: Ergebnisse (results)
+// ----------------------------------------------------
+model Result {
+  id                    Int      @id @default(autoincrement()) @map("result_id")
+  
+  // Fremdschlüssel: Verbindung zum Student-Modell
+  studentId             Int      @map("student_id")
+  student               Student  @relation(fields: [studentId], references: [id])
+  
+  // Fremdschlüssel: Verbindung zum Exercise-Modell
+  exerciseId            Int      @map("exercise_id")
+  exercise              Exercise @relation(fields: [exerciseId], references: [id])
+
+  submittedAnswerJson   Json     @map("submitted_answer_json") // Die Antwort des Studenten
+  score                 Decimal    @db.Decimal(5, 2) // Punktzahl (z.B. 8.50 von 10.00)
+  feedbackText          String?  @map("feedback_text") @db.Text
+  submissionTime        DateTime @default(now()) @map("submission_time") @db.Timestamptz(6)
+  durationSeconds       Int      @map("duration_seconds")
+
+  @@map("results") // Benennt die Tabelle in der Datenbank "results"
+}
