@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
+const cors = require('cors');
 const { PrismaClient } = require('@prisma/client');
+const jwt = require('jsonwebtoken');
 
 // Umgebungsvariablen laden (optional, aber nützlich für lokale Entwicklung)
 require('dotenv').config();
@@ -10,7 +12,8 @@ const prisma = new PrismaClient();
 
 // Render stellt den Port als Umgebungsvariable bereit
 const PORT = process.env.PORT || 3001; 
-
+// Add CORS before other middleware
+app.use(cors());
 app.use(express.json()); // Für das Parsen von JSON-Anfragen
 
 // Einfacher Test-Endpunkt
@@ -35,6 +38,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this';
 
 // Add login endpoint
 app.post('/api/login', async (req, res) => {
+  console.log('Login attempt:', req.body);
   const { qrCodeIdentifier } = req.body;
 
   if (!qrCodeIdentifier) {

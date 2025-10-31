@@ -1,30 +1,18 @@
 // src/pages/Login.jsx
 import React, { useState } from 'react';
 import './Login.css';
-// Annahme: Du hast einen Router (wie react-router-dom) installiert
-// import { useNavigate } from 'react-router-dom';
 
 function Login() {
   const [qrCode, setQrCode] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  
-  // const navigate = useNavigate(); // Für die Weiterleitung
 
-  // Diese Funktion wird beim Absenden des Formulars aufgerufen
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
-    if (qrCode.trim() === '') {
-      setError('Bitte gib deinen QR-Code-Identifikator ein.');
-      setIsLoading(false);
-      return;
-    }
-
     try {
-      // 1. API-Aufruf an den Backend-Login-Endpoint
       const response = await fetch('/api/login', {
         method: 'POST',
         headers: {
@@ -36,27 +24,16 @@ function Login() {
       const data = await response.json();
 
       if (response.ok) {
-        // 2. Erfolg: Speichere wichtige Daten
-        // Das Backend sollte hier den Token und ggf. die studentId zurückgeben!
-        
-        // **WICHTIG:** Speichere den Token (JWT) für die Authentifizierung zukünftiger Anfragen
-        localStorage.setItem('authToken', data.token); 
-        
-        // Optional: Speichere die studentId
+        console.log('Login successful:', data);
+        localStorage.setItem('authToken', data.token);
         localStorage.setItem('studentId', data.studentId);
-        
-        // 3. Weiterleitung zur Übungsübersicht
-        console.log('Anmeldung erfolgreich! Token gespeichert.');
-        // navigate('/exercises'); // <--- Hierhin leiten wir weiter!
-
+        // Successful login - no navigation
       } else {
-        // 4. Fehlerbehandlung
-        setError(data.message || 'Anmeldung fehlgeschlagen. Ungültiger Code?');
+        setError(data.message || 'Login fehlgeschlagen');
       }
-
     } catch (err) {
-      console.error('Login-Fehler:', err);
-      setError('Es gab ein Problem bei der Verbindung zum Server.');
+      console.error('Login error:', err);
+      setError('Verbindungsfehler zum Server');
     } finally {
       setIsLoading(false);
     }
