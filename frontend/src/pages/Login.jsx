@@ -17,7 +17,6 @@ function Login() {
     const baseUrl = import.meta.env.VITE_API_URL || '';
     
     try {
-      console.log('Sending request to:', `${baseUrl}/api/login`);
       const response = await fetch(`${baseUrl}/api/login`, {
         method: 'POST',
         headers: {
@@ -27,30 +26,14 @@ function Login() {
         credentials: 'include'
       });
 
-      console.log('Response status:', response.status);
-      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+      const data = await response.json();
 
-      const text = await response.text();
-      console.log('Raw response:', text);
-
-      if (!text) {
-        throw new Error('Leere Antwort vom Server');
-      }
-
-      try {
-        const data = JSON.parse(text);
-        console.log('Parsed response:', data);
-
-        if (response.ok && data.token) {
-          localStorage.setItem('authToken', data.token);
-          localStorage.setItem('studentId', data.studentId);
-          window.location.href = '/exercises';
-        } else {
-          setError(data.message || 'Login fehlgeschlagen');
-        }
-      } catch (parseError) {
-        console.error('JSON Parse Error:', parseError);
-        throw new Error(`Ungültige Server-Antwort: ${text}`);
+      if (response.ok && data.token) {
+        localStorage.setItem('authToken', data.token);
+        localStorage.setItem('studentId', data.studentId);
+        navigate('/exercises'); // Use React Router navigation
+      } else {
+        setError(data.message || 'Login fehlgeschlagen');
       }
     } catch (err) {
       console.error('Network error:', err);

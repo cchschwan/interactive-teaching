@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './pages/Login';
 import Exercises from './pages/Exercises';
 
@@ -8,7 +8,6 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/exercises" element={<Exercises />} />
-        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
   );
