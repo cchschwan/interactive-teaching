@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "echo 'Run development server here'",
-    "generate": "./node_modules/prisma/build/index.js generate"
+    "generate": "prisma generate",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "express": "^4.19.2",
