@@ -30,6 +30,44 @@ app.get('/api/exercises', async (req, res) => {
   }
 });
 
+// Add JWT secret to your environment variables
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this';
+
+// Add login endpoint
+app.post('/api/login', async (req, res) => {
+  const { qrCodeIdentifier } = req.body;
+
+  if (!qrCodeIdentifier) {
+    return res.status(400).json({ message: 'QR-Code Identifikator fehlt' });
+  }
+
+  try {
+    const student = await prisma.student.findUnique({
+      where: { qrCodeIdentifier },
+    });
+
+    if (!student) {
+      return res.status(401).json({ message: 'Ungültiger QR-Code' });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { studentId: student.id },
+      JWT_SECRET,
+      { expiresIn: '8h' }
+    );
+
+    res.json({
+      token,
+      studentId: student.id
+    });
+
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Server-Fehler beim Login' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
