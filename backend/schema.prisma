@@ -7,6 +7,7 @@ datasource db {
 // Definiert den Prisma-Client (wird für Abfragen im Node.js-Code genutzt)
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 // ----------------------------------------------------
