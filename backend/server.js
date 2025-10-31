@@ -27,9 +27,8 @@ app.get('/api/exercises', async (req, res) => {
     const exercises = await prisma.exercise.findMany();
     res.json(exercises);
   } catch (error) {
-    // Gibt einen Fehler aus, wenn die Datenbank noch nicht migriert ist
-    console.error("Database query failed:", error.message); 
-    res.status(500).json({ error: "Could not fetch exercises. Is the database migrated?" });
+    console.error('Failed to fetch exercises:', error);
+    res.status(500).json({ error: 'Could not fetch exercises' });
   }
 });
 
