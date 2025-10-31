@@ -7,25 +7,29 @@ function Exercises() {
   const [error, setError] = useState(null);
   const [answers, setAnswers] = useState({});
   const [feedback, setFeedback] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchExercises = async () => {
       try {
         const token = localStorage.getItem('authToken');
-        const response = await fetch('/api/exercises', {
+        const baseUrl = import.meta.env.VITE_API_URL || '';
+        console.log('Using API URL:', baseUrl); // Debug log
+
+        const response = await fetch(`${baseUrl}/api/exercises`, {
           headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
           }
         });
-        
-        if (response.ok) {
-          const data = await response.json();
-          setExercises(data);
-        } else {
-          setError('Fehler beim Laden der Übungen');
-        }
+
+        console.log('Response status:', response.status); // Debug log
+        const data = await response.json();
+        console.log('Exercises data:', data); // Debug log
+        setExercises(data);
       } catch (err) {
-        setError('Verbindungsfehler');
+        console.error('Fetch error:', err);
+        setError(`Failed to load exercises: ${err.message}`);
       } finally {
         setLoading(false);
       }
