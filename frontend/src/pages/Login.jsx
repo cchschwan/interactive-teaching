@@ -14,35 +14,47 @@ function Login() {
     setError('');
     setIsLoading(true);
 
+    const apiUrl = import.meta.env.VITE_API_URL || '/api';
+    console.log('Using API URL:', apiUrl);
+
     try {
-      const response = await fetch('/api/login', {
+      const response = await fetch(`${apiUrl}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ qrCodeIdentifier: qrCode }),
+        credentials: 'include'
       });
 
       console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
       const text = await response.text();
       console.log('Raw response:', text);
 
       if (!text) {
-        throw new Error('Server sent empty response');
+        throw new Error('Leere Antwort vom Server');
       }
 
-      const data = JSON.parse(text);
+      try {
+        const data = JSON.parse(text);
+        console.log('Parsed response:', data);
 
-      if (response.ok && data.token) {
-        localStorage.setItem('authToken', data.token);
-        localStorage.setItem('studentId', data.studentId);
-        window.location.href = '/exercises';
-      } else {
-        setError(data.message || 'Login fehlgeschlagen');
+        if (response.ok && data.token) {
+          localStorage.setItem('authToken', data.token);
+          localStorage.setItem('studentId', data.studentId);
+          window.location.href = '/exercises';
+        } else {
+          setError(data.message || 'Login fehlgeschlagen');
+        }
+      } catch (parseError) {
+        console.error('JSON Parse Error:', parseError);
+        throw new Error(`Ungültige Server-Antwort: ${text}`);
       }
     } catch (err) {
-      console.error('Login error:', err);
-      setError(`Server-Fehler: ${err.message}`);
+      console.error('Login Error:', err);
+      setError(`Fehler: ${err.message}`);
     } finally {
       setIsLoading(false);
     }

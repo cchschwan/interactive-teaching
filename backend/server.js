@@ -16,6 +16,18 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json()); // Für das Parsen von JSON-Anfragen
 
+// Add CORS configuration
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://interactive-teaching-frontend.onrender.com'],
+  credentials: true
+}));
+
+// Add request logging middleware
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+});
+
 // Einfacher Test-Endpunkt
 app.get('/api/status', (req, res) => {
   res.json({ message: "API is running!", environment: process.env.NODE_ENV });
@@ -37,23 +49,23 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this';
 
 // Add login endpoint
 app.post('/api/login', async (req, res) => {
-  console.log('[Login] Request received:', req.body);
-
+  console.log('[Login] Request body:', req.body);
+  
   try {
     const { qrCodeIdentifier } = req.body;
-
+    
     if (!qrCodeIdentifier) {
-      console.log('[Login] Missing qrCodeIdentifier');
+      console.log('[Login] No QR code provided');
       return res.status(400).json({
         success: false,
-        message: 'QR-Code Identifikator fehlt'
+        message: 'QR-Code fehlt'
       });
     }
 
+    console.log('[Login] Looking for QR code:', qrCodeIdentifier);
     const student = await prisma.student.findUnique({
-      where: { qrCodeIdentifier },
+      where: { qrCodeIdentifier }
     });
-
     console.log('[Login] Found student:', student);
 
     if (!student) {
@@ -69,17 +81,17 @@ app.post('/api/login', async (req, res) => {
       { expiresIn: '8h' }
     );
 
-    console.log('[Login] Generated token for student:', student.id);
-
-    return res.status(200).json({
+    const response = {
       success: true,
       token,
       studentId: student.id,
       message: 'Login erfolgreich'
-    });
+    };
+    console.log('[Login] Sending response:', response);
+    return res.json(response);
 
   } catch (error) {
-    console.error('[Login] Server error:', error);
+    console.error('[Login] Error:', error);
     return res.status(500).json({
       success: false,
       message: 'Server-Fehler beim Login',
